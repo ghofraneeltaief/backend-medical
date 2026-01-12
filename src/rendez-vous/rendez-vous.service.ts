@@ -21,7 +21,7 @@ export class RendezVousService {
     const medecin = await this.usersRepo.findOne({ where: { id: rvData.id_medecin } });
 
     if (!acte) throw new BadRequestException('Acte invalide');
-    if (!medecin || medecin.role !== 'medecin') throw new BadRequestException('Médecin invalide');
+    if (!medecin || medecin.role !== 'médecin') throw new BadRequestException('Médecin invalide');
 
     const rv = this.rvRepo.create({
       acte,

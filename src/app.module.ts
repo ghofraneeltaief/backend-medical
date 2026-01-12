@@ -7,12 +7,11 @@ import { ActesModule } from './actes/actes.module';
 import { RendezVousModule } from './rendez-vous/rendez-vous.module';
 import { CompteRenduModule } from './compte-rendu/compte-rendu.module';
 import { ImagerieMedicaleModule } from './imagerie-medicale/imagerie-medicale.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true, // accessible partout sans réimporter
-    }),
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST,
@@ -28,6 +27,7 @@ import { ImagerieMedicaleModule } from './imagerie-medicale/imagerie-medicale.mo
     RendezVousModule,
     CompteRenduModule,
     ImagerieMedicaleModule,
+    DashboardModule, // <-- ajouté ici
   ],
 })
 export class AppModule {}
