@@ -44,8 +44,26 @@ export class RendezVousService {
     return rv;
   }
 
-  async update(id: number, updateData: Partial<RendezVousEntity>): Promise<RendezVousEntity> {
+  async update(id: number, updateData: Partial<RendezVousEntity> & { id_acte?: number; id_medecin?: number }): Promise<RendezVousEntity> {
     const rv = await this.findOne(id);
+    
+    // Si id_acte est fourni, charger l'acte
+    if (updateData.id_acte !== undefined) {
+      const acte = await this.actesRepo.findOne({ where: { Id_Acte: updateData.id_acte } });
+      if (!acte) throw new BadRequestException('Acte invalide');
+      rv.acte = acte;
+      delete (updateData as any).id_acte;
+    }
+    
+    // Si id_medecin est fourni, charger le médecin
+    if (updateData.id_medecin !== undefined) {
+      const medecin = await this.usersRepo.findOne({ where: { id: updateData.id_medecin } });
+      if (!medecin || medecin.role !== 'médecin') throw new BadRequestException('Médecin invalide');
+      rv.medecin = medecin;
+      delete (updateData as any).id_medecin;
+    }
+    
+    // Mettre à jour les autres champs
     Object.assign(rv, updateData);
     return this.rvRepo.save(rv);
   }
