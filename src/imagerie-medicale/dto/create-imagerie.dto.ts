@@ -1,6 +1,6 @@
 export class CreateImagerieDto {
   type: string;
   urlImage: string;
-  compteRenduId: number;
+  compteRenduId?: number;
   rendezVousId: number;
 }

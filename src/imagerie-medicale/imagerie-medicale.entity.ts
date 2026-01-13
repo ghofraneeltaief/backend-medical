@@ -13,9 +13,9 @@ export class ImagerieMedicaleEntity {
   @Column()
   urlImage: string; // chemin ou URL de l’image
 
-  @ManyToOne(() => CompteRenduEntity, { eager: true, onDelete: "CASCADE" })
+  @ManyToOne(() => CompteRenduEntity, { eager: true, onDelete: "CASCADE", nullable: true })
   @JoinColumn({ name: "compteRenduId" })
-  compteRendu: CompteRenduEntity;
+  compteRendu: CompteRenduEntity | null;
 
   @ManyToOne(() => RendezVousEntity, { eager: true, onDelete: "CASCADE" })
   @JoinColumn({ name: "rendezVousId" })
