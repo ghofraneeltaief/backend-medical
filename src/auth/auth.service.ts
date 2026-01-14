@@ -4,18 +4,36 @@ import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../notifications/notifications.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User) private usersRepo: Repository<User>,
     private jwtService: JwtService,
+    private notificationsService: NotificationsService,
   ) {}
 
   async register(name: string, lastName: string,email: string, password: string, role: string) {
     const hashed = await bcrypt.hash(password, 10);
     const user = this.usersRepo.create({name, lastName, email, password: hashed, role });
-    return this.usersRepo.save(user);
+    const savedUser = await this.usersRepo.save(user);
+
+    // Créer une notification uniquement pour les admins
+    try {
+      await this.notificationsService.createForRole({
+        role: 'admin',
+        type: NotificationType.USER,
+        title: 'Nouvel utilisateur créé',
+        message: `Un nouvel utilisateur "${name} ${lastName}" avec le rôle "${role}" a été créé`,
+        related_id: savedUser.id,
+      });
+    } catch (error) {
+      console.error('Erreur lors de la création de la notification:', error);
+    }
+
+    return savedUser;
   }
 
   async validateUser(email: string, pass: string): Promise<any> {

@@ -5,9 +5,13 @@ import { RendezVousService } from './rendez-vous.service';
 import { RendezVousController } from './rendez-vous.controller';
 import { ActesEntity } from '../actes/actes.entity';
 import { User } from '../auth/user.entity';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([RendezVousEntity, ActesEntity, User])],
+  imports: [
+    TypeOrmModule.forFeature([RendezVousEntity, ActesEntity, User]),
+    NotificationsModule,
+  ],
   providers: [RendezVousService],
   controllers: [RendezVousController],
 })

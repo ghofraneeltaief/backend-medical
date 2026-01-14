@@ -8,6 +8,8 @@ import { RendezVousModule } from './rendez-vous/rendez-vous.module';
 import { CompteRenduModule } from './compte-rendu/compte-rendu.module';
 import { ImagerieMedicaleModule } from './imagerie-medicale/imagerie-medicale.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { FacturesModule } from './factures/factures.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -27,7 +29,9 @@ import { DashboardModule } from './dashboard/dashboard.module';
     RendezVousModule,
     CompteRenduModule,
     ImagerieMedicaleModule,
-    DashboardModule, // <-- ajouté ici
+    DashboardModule,
+    FacturesModule,
+    NotificationsModule,
   ],
 })
 export class AppModule {}

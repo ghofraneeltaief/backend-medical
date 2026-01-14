@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { RendezVousEntity } from './rendez-vous.entity';
 import { User } from '../auth/user.entity';
 import { ActesEntity } from '../actes/actes.entity';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../notifications/notifications.entity';
 
 @Injectable()
 export class RendezVousService {
@@ -14,6 +16,7 @@ export class RendezVousService {
     private readonly usersRepo: Repository<User>,
     @InjectRepository(ActesEntity)
     private readonly actesRepo: Repository<ActesEntity>,
+    private notificationsService: NotificationsService,
   ) {}
 
   async create(rvData: { id_acte: number; id_medecin: number; nom_patient: string; date: string; heure: string }) {
@@ -31,7 +34,25 @@ export class RendezVousService {
       heure: rvData.heure,
     });
 
-    return this.rvRepo.save(rv);
+    const savedRv = await this.rvRepo.save(rv);
+
+    // Créer une notification pour les rôles concernés (admin, assistante)
+    try {
+      const roles = ['admin', 'assistante'];
+      for (const role of roles) {
+        await this.notificationsService.createForRole({
+          role,
+          type: NotificationType.RENDEZ_VOUS,
+          title: 'Nouveau rendez-vous créé',
+          message: `Un nouveau rendez-vous a été créé pour ${rvData.nom_patient} le ${rvData.date} à ${rvData.heure} (${acte.Nom_Acte})`,
+          related_id: savedRv.id,
+        });
+      }
+    } catch (error) {
+      console.error('Erreur lors de la création de la notification:', error);
+    }
+
+    return savedRv;
   }
 
   findAll(): Promise<RendezVousEntity[]> {
